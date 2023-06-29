@@ -11,4 +11,4 @@
 TODO：
 
 - [ ] 课程表导出为ics文件
-- [ ] 自动教学评价（如有需要可查看我的另一个[项目](https://github.com/Juskinbo/spider-HZNU)
+- [ ] 自动教学评价（如有需要可查看我的另一个[项目](https://github.com/Juskinbo/spider-HZNU)）
