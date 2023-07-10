@@ -23,18 +23,84 @@ var setTimeout_ = 4000; // 设置脚本实际运行的开始时间，网络不�
 function main() {
   var windowURL = window.location.href; // 获取当前页面的URL
   if (windowURL.indexOf(ClassScheduleURL) != -1) {
+    // 未完成
     // 如果当前页面的URL中包含课表查询页面的URL
     ClassSchedule2ICS();
   } else if (windowURL.indexOf(ExamScheduleURL) != -1) {
     // 如果当前页面的URL中包含考试信息查询页面的URL
     ExamSchedule2ICS();
   } else if (windowURL.indexOf(StudentEvalutionURL) != -1) {
+    // 未完成
+    // 自动教学评价
     // StudentEvalution();
     // unsafeWindow.addEventListener("load", StudentEvalution);
     document.getElementById("btn_yd").onclick = function () {
       window.setTimeout(StudentEvalution, setTimeout_);
     };
   }
+}
+
+// 导出课表
+function ClassSchedule2ICS() {
+  console.log("ClassSchedule2ICS");
+  pageLoaded();
+  function pageLoaded() {
+    let div = document.getElementById("tb");
+    let btn = document.createElement("button");
+    let startDate = document.createElement("input");
+    let lastTime = document.createElement("input");
+    let startLabel = document.createElement("label");
+    startDate.type = "date";
+    startDate.className = "btn btn-default";
+    lastTime.type = "number";
+    lastTime.className = "btn btn-default";
+    lastTime.placeholder = "请输入本学期周数";
+    startLabel.className = "btn";
+    startLabel.innerHTML = "开始日期:";
+    lastTime.className = "btn btn-default";
+    btn.className = "btn btn-default";
+    btn.innerHTML = "导出 ICS 文件";
+    div.insertBefore(btn, div.firstChild);
+    div.insertBefore(lastTime, div.firstChild);
+    div.insertBefore(startDate, div.firstChild);
+    div.insertBefore(startLabel, div.firstChild);
+    btn.onclick = function () {
+      // 判断一下 StartDate 是否为空
+      if (lastTime.value == "" || startDate.value == "") {
+        alert("请选择正确的开始日期以及学期周数");
+        return;
+      }
+      console.log("学期开始时间为："+startDate.value);
+      console.log("学期周数为："+lastTime.value);
+      let classTable = document.getElementById("kbgrid_table_0");
+      let trs = classTable.querySelectorAll("tr");
+      // 课程表，是一个二维数组
+      let classes = new Array(7);
+      for(let i = 0; i < 7; i++){
+        classes[i] = new Array();
+      }
+      // 从第三个tr开始
+      for (let i = 2; i < trs.length; i++) {
+        let tds = trs[i].querySelectorAll("td");
+        for(let i = 2; i < tds.length; i++) {
+          if(tds[i].innerHTML != ""){
+              let courseName = tds[i].querySelectorAll("span");
+              console.log(courseName[0].innerText); 
+              
+          }
+        }
+      }
+
+    }
+  }
+
+
+
+
+
+
+
+
 }
 
 // 导出考试信息
@@ -60,16 +126,6 @@ function ExamSchedule2ICS() {
     // 考试地点
     // 考试校区
     // 考试座号
-    class EXAM {
-      constructor(e) {
-        if (e) {
-          this.course = e.course; // 课程名
-          this.timeS = e.timeS; // 考试开始时间
-          this.timeE = e.timeE; // 考试结束时间
-          this.location = e.location; // 考试地点组成： 考试地点、考试校区、座位号
-        }
-      }
-    }
     let exams = new Array();
     table.querySelectorAll("tr").forEach((tr) => {
       let exam = new EXAM();
@@ -120,6 +176,9 @@ function ExamSchedule2ICS() {
     ics.exportIcs();
   }
 }
+
+// 自动教学评价
+function StudentEvalution() {}
 
 var CRLF = "\n";
 var SPACE = " ";
@@ -204,6 +263,38 @@ class ICS {
     a.click();
   }
 }
+
+class EXAM {
+  constructor(e) {
+    if (e) {
+      this.course = e.course; // 课程名
+      this.timeS = e.timeS; // 考试开始时间
+      this.timeE = e.timeE; // 考试结束时间
+      this.location = e.location; // 考试地点组成： 考试地点、考试校区、座位号
+    }
+  }
+}
+
+// 创建一个 Course 类
+class Course {
+  // 课程名称
+  // 教室
+  // 课程开始时间
+  // 课程结束时间
+  // 课程开始周数
+  // 课程结束周数
+  constructor(course){
+    if(course){
+      this.name = course.name;
+      this.classroom = course.classroom;
+      this.startTime = course.startTime;
+      this.endTime = course.endTime;
+      this.startWeek = course.startWeek;
+      this.endWeek = course.endWeek;
+    }
+  }
+}
+
 
 class ICSEvent {
   constructor(DTSTART, DTEND, SUMMARY) {
