@@ -67,40 +67,69 @@ function ClassSchedule2ICS() {
     btn.onclick = function () {
       // 判断一下 StartDate 是否为空
       if (lastTime.value == "" || startDate.value == "") {
-        alert("请选择正确的开始日期以及学期周数");
+        alert("请输入正确的开始日期以及学期周数");
         return;
       }
-      console.log("学期开始时间为："+startDate.value);
-      console.log("学期周数为："+lastTime.value);
+      console.log("学期开始时间为：" + startDate.value);
+      console.log("学期周数为：" + lastTime.value);
       let classTable = document.getElementById("kbgrid_table_0");
       let trs = classTable.querySelectorAll("tr");
       // 课程表，是一个二维数组
       let classes = new Array(7);
-      for(let i = 0; i < 7; i++){
+      for (let i = 0; i < 7; i++) {
         classes[i] = new Array();
       }
       // 从第三个tr开始
       for (let i = 2; i < trs.length; i++) {
         let tds = trs[i].querySelectorAll("td");
-        for(let i = 2; i < tds.length; i++) {
-          if(tds[i].innerHTML != ""){
-              let courseName = tds[i].querySelectorAll("span");
-              console.log(courseName[0].innerText); 
-              
+        for (let i = 2; i < tds.length; i++) {
+          if (tds[i].innerHTML != "") {
+            let courseName = tds[i].querySelector("span");
+            let detail = tds[i].querySelectorAll("p");
+            // console.log(courseName.innerText);
+            // console.log(detail[0].innerText);
+            let course  = new Course();
+            course.name = courseName.innerText;
+            detail.forEach((p) => {
+              let span = p.querySelector("span");
+              let fonts = p.querySelectorAll("font");
+              // 定义一个变量，没有初始值
+              let font;
+              fonts.forEach(temp => {
+                if(temp.parentNode == p){
+                  font = temp;
+                  // 跳出
+                  return;
+                }
+              });
+              // console.log(font);
+              if (span.title == "节/周") {
+                // (10-12节)1-16周
+                 // 获取10，12，1，16四个数字
+                  let reg = /\d+/g;
+                  let nums = font.innerText.match(reg);
+                  // console.log(font.innerText);
+                  // console.log(nums);
+                  course.startTime = nums[0];
+                  course.endTime = nums[1];
+                  course.startWeek = nums[2];
+                  course.endWeek = nums[3];
+              }
+              if (span.title == "上课地点") {
+                course.classroom = font.innerText;
+              }
+              console.log(course);
+            });
+
+            // let spans = tds[i].querySelectorAll("p span");
+            // let fonts = tds[i].querySelectorAll("p font");
+            // console.log(spans);
+            // console.log(fonts);
           }
         }
       }
-
-    }
+    };
   }
-
-
-
-
-
-
-
-
 }
 
 // 导出考试信息
@@ -283,8 +312,8 @@ class Course {
   // 课程结束时间
   // 课程开始周数
   // 课程结束周数
-  constructor(course){
-    if(course){
+  constructor(course) {
+    if (course) {
       this.name = course.name;
       this.classroom = course.classroom;
       this.startTime = course.startTime;
@@ -294,7 +323,6 @@ class Course {
     }
   }
 }
-
 
 class ICSEvent {
   constructor(DTSTART, DTEND, SUMMARY) {
