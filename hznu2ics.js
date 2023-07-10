@@ -80,12 +80,18 @@ function ClassSchedule2ICS() {
         classes[i] = new Array();
       }
       // 从第三个tr开始
+      console.log(trs.length);
       for (let i = 2; i < trs.length; i++) {
-        let tds = trs[i].querySelectorAll("td");
-        for (let i = 2; i < tds.length; i++) {
-          if (tds[i].innerHTML != "") {
-            let courseName = tds[i].querySelector("span");
-            let detail = tds[i].querySelectorAll("p");
+        let tds = trs[i].getElementsByTagName("td");
+        // console.log(tds.length);
+        let tmp=1;
+        if(i==2||i==7||i==11){
+          tmp = 2;
+        }
+        for (let j = tmp; j < tds.length; j++) {
+          if (tds[j].innerHTML != "") {
+            let courseName = tds[j].querySelector("span");
+            let detail = tds[j].querySelectorAll("p");
             // console.log(courseName.innerText);
             // console.log(detail[0].innerText);
             let course  = new Course();
@@ -118,9 +124,14 @@ function ClassSchedule2ICS() {
               if (span.title == "上课地点") {
                 course.classroom = font.innerText;
               }
-              console.log(course);
-            });
 
+              
+            });
+            // 截取id的第一位，即为星期几
+            let id = parseInt(tds[j].id.charAt(0));
+            console.log(id);
+            classes[id-1].push(course);
+              // console.log(course);
             // let spans = tds[i].querySelectorAll("p span");
             // let fonts = tds[i].querySelectorAll("p font");
             // console.log(spans);
@@ -128,6 +139,7 @@ function ClassSchedule2ICS() {
           }
         }
       }
+      console.log(classes);
     };
   }
 }
